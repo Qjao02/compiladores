@@ -61,17 +61,15 @@ class Syntactic():
 
     def decl_comand(self):
         
-        if (self.token == 'INT' OR self.token == 'FLOAT'):
-            
-            self.type()
-            self.match('ID')
-            
-            if(self.token == 'COMMA' or self.token == 'PCOMMA' or self.token == 'ATTR'):
-                self.declaration2()
-
-
-        elif(self.token == 'LBRACE' OR self.token == 'ID' or self.token == )
         
+
+        if(self.token == 'INT ' or self.token == 'FLOAT'):
+            self.declaration()
+            self.decl_comand()
+
+        elif(self.token == 'LBRACE' or self.token == 'ID' or self.token == 'IF' or self.token == 'WHILE' or self.token == 'READ' or self.token == 'PRINT' or self.token == 'FOR'):
+            self.comand()
+
     
 
 
@@ -84,8 +82,15 @@ class Syntactic():
             self.match('FLOAT')
 
 
-    def declaration(self)
-        pass
+    def declaration(self):
+
+        if (self.token == 'INT' OR self.token == 'FLOAT'):
+            
+            self.type()
+            self.match('ID')
+            
+            if(self.token == 'COMMA' or self.token == 'PCOMMA' or self.token == 'ATTR'):
+                self.declaration2()
 
     def declaration2(self):
         if (self.token == 'COMMA'):
@@ -107,8 +112,29 @@ class Syntactic():
        
 
     def comand(self):
-        pass
-    
+    elif(self.token == 'LBRACE' or self.token == 'ID' or self.token == 'IF' or self.token == 'WHILE' or self.token == 'READ' or self.token == 'PRINT' or self.token == 'FOR'):
+
+        if (self.token == 'LBRACE'):
+            self.match('LBRACE')
+        
+        elif(self.token == 'ID'):
+            self.match('ID')
+        
+        elif(self.token == 'IF'):
+            self.match('IF')
+        
+        elif(self.token == 'WHILE'):
+            self.match('WHILE')
+        
+        elif(self.token == 'READ')
+            self.match('READ')
+        
+        elif(self.token == 'PRINT'):
+            self.match('PRINT')
+        
+        elif(self.token == 'FOR'):
+            self.match('FOR')
+        
     def block(self):
         pass
 
