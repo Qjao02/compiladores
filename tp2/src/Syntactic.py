@@ -115,66 +115,101 @@ class Syntactic():
     elif(self.token == 'LBRACE' or self.token == 'ID' or self.token == 'IF' or self.token == 'WHILE' or self.token == 'READ' or self.token == 'PRINT' or self.token == 'FOR'):
 
         if (self.token == 'LBRACE'):
-            self.match('LBRACE')
+            self.block()
         
         elif(self.token == 'ID'):
-            self.match('ID')
+            self.attr()
         
         elif(self.token == 'IF'):
-            self.match('IF')
+            self.comand_if()
         
         elif(self.token == 'WHILE'):
-            self.match('WHILE')
+            self.comand_while()
         
         elif(self.token == 'READ')
-            self.match('READ')
+            self.self.comand_read()
         
         elif(self.token == 'PRINT'):
-            self.match('PRINT')
+            self.comand_print('PRINT')
         
         elif(self.token == 'FOR'):
-            self.match('FOR')
+            self.comand_for()
         
+
+
     def block(self):
-        pass
+        self.match('LBRACE')
+        self.decl_comand()
+        self.match('RBRACE')
 
-    def assignmentt(self):
-        pass
 
+    def attr(self):
+        self.match('ID')
+        self.match('ATTR')
+        self.expression()
+        self.match('PCOMMA')
+    
     def comand_if(self):
-        pass
+        self.match('IF')
+        self.match('LBRACKET')
+        self.expression()
+        self.match('RBRACKET')
+        self.comand()
+        if(self.token == 'ELSE'):
+            self.comand_else()
+        
     
     def comand_else(self):
-        pass
+        self.match('ELSE')
+        self.comand()
 
-    def comand_when(self):
-        pass
+    def comand_while(self):
+        self.match('WHILE')
+        self.match('LBRACKET')
+        self.expression()
+        self.match('LBRACKET')
+        self.comand()
+        if(self.token == 'ELSE'):
+            self.comand_else()
     
     def comand_read(self):
-        pass
+        self.match('READ')
+        self.match('ID')
+        self.match('PCOMMA')
     
     def comand_print(self):
-        pass
+        self.match('PRINT')
+        self.match('LBRACKET')
+        self.expression()
+        self.match('RBRACKET')
+        self.match('PCOMMA')
 
     def comand_for(self):
-        pass
+        self.match('FOR')
+        self.match('LBRACKET')
+        self.att_for()
+        self.match('PCOMMA')
+        self.expression()
+        self.match('PCOMMA')
     
     def att_for(self):
-        pass
+        self.match('RBRACKET')
+        self.comand()
 
     def expression(self):
         if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
-
+            self.conjunction()
 
     
     def expressaoOpc(self):
         pass
     
     def conjunction(self):
-        pass
+        if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
+        self.conjuction_opc() 
     
     def conjuction_opc(self):
-        pass
+        
 
     def equal(self):
         if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
@@ -206,12 +241,27 @@ class Syntactic():
     def term(self):
         if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
             self.fact()
-    
+
+        if(self.token == 'MULT' or self.token == 'DIV'):
+             self.term_opc
+
     def term_opc(self):
-        pass
+        if(self.token == 'MULT' or self.token == 'DIV'):
+            self.op_mult()
+            self.fact()
+            self.term_opc()
+        else:
+            pass        
+    
+                 
+        
     
     def op_mult(self):
-        pass
+        if(self.token == 'MULT')
+            self.match('MULT')
+        elif(self.token == 'DIV')
+            self.match('DIV')
+        
     
     def fact(self):
         if (self.token == 'ID'):
