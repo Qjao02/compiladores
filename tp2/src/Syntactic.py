@@ -84,7 +84,7 @@ class Syntactic():
 
     def declaration(self):
 
-        if (self.token == 'INT' OR self.token == 'FLOAT'):
+        if (self.token == 'INT' or self.token == 'FLOAT'):
             
             self.type()
             self.match('ID')
@@ -199,62 +199,102 @@ class Syntactic():
     def expression(self):
         if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
             self.conjunction()
+            
+            if (self.token == 'OR'):
+                self.expressaoOpc()
 
     
     def expressaoOpc(self):
-        pass
+        self.match('OR')
+        self.conjunction()
+        self.expressaoOpc() 
     
     def conjunction(self):
         if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
-        self.conjuction_opc() 
+            self.equal()
+            
+            if(self.token == 'AND'):
+                self.conjuction_opc() 
     
     def conjuction_opc(self):
+        self.match('AND')
+        self.equal()
         
+        if(self.token == 'AND'):
+            self.conjuction_opc
 
     def equal(self):
         if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
             self.relacao()
+            if (self.token == 'EQ' or self.token == 'NE'):
+                self.equal_opc
+    
+    def equal_opc(self):
+        self.op_equal()
+        self.relation()
         
+        if (self.token == 'EQ' or self.token == 'NE'):
+            self.equal_opc()
     
     def relation(self):
         if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
             self.add()
+
     def op_equal(self):
-        pass
+        self.match('EQ')
+        self.match('NE')
 
     def relac_opc(self):
-        pass
+        self.op_rel()
+        self.relation()
+        if(self.token == 'LT' or self.token == 'LE' or self.token == 'GT' or self.token == 'GE'):
+            self.relac_opc()
     
     def op_rel(self):
-        pass
-    
+        if (self.token == 'LT'):
+            self.match('LT')
+        
+        elif(self.token == 'LE'):
+            self.match('LE')
+
+        elif(self.token == 'GT'):
+            self.match('GT')
+
+        elif (self.token == 'GE'):
+            self.match('GE')
+            )   
     def add(self):
         if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
             self.term()
+            if (self.token == 'PLUS' or self.token == 'MINUS'):
+                self.add_opc()
     
     def add_opc(self):
-        pass
+        self.op_add()
+        self.term()
+        if (self.token == 'PLUS' or self.token == 'MINUS'):
+            self.add_opc()
     
     def op_add(self):
-        pass
+        if(self.token == 'PLUS'):
+            self.match('PLUS')
+       
+        if(self.token == 'MINUS'):
+            self.match('MINUS')
 
     def term(self):
         if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
-            self.fact()
+            self.fact() 
 
         if(self.token == 'MULT' or self.token == 'DIV'):
-             self.term_opc
+             self.term_opc()
 
     def term_opc(self):
+        self.op_mult()
+        self.fact()
         if(self.token == 'MULT' or self.token == 'DIV'):
-            self.op_mult()
-            self.fact()
             self.term_opc()
-        else:
-            pass        
-    
-                 
-        
+
     
     def op_mult(self):
         if(self.token == 'MULT')
