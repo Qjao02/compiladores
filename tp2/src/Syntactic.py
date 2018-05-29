@@ -6,32 +6,38 @@
     @author: alexandre
 """
 
-import Token
-import SymbolTable
-import TableEntry
-import ASA
-
+from Token import Token
+from SymbolTable import SymbolTable
+from TableEntry import TableEntry
+from SymbolTableTree import SymbolTableTree
 
 class Syntactic():
     token = ''
     arrayToken = []
     indexToken = ''
     ASA = ''
-    
+    symbolTableTree = ''
+    tableEntry = ''
+    actualTable = ''
 
     def __init__ (self, arrayToken):
         self.arrayToken = arrayToken
         self.token = self.arrayToken[0]
         self.indexToken = 0
-    
+        self.actualTable = SymbolTable()
+        self.symbolTableTree = SymbolTableTree(self.actualTable)
+        
     def match(self,tok):
         if(self.token.getCodigoToken() == tok):
-            print('Token ' + self.token.getCodigoToken() + ' reconhecido na entrada.')
+            '''for k,v in self.actualTable.symbolTable.items():
+                print(v.toString())'''
             self.indexToken = self.indexToken + 1
             if (self.indexToken < len(self.arrayToken)):
                 self.token = self.arrayToken[self.indexToken]
+                print('Token atual: ' + self.token.getCodigoToken())
+
         else:
-            print(self.token)
+            print('token invalido ' + self.token.getCodigoToken())
 
     def imprimeErro(self):
         print ('bla')
@@ -47,92 +53,114 @@ class Syntactic():
     def program(self):
        
         #match first token for any code in c-small
+        print(self.token.__str__())
+        input()
         self.match('INT')
         self.match('MAIN')
         self.match('LBRACKET')
         self.match('RBRACKET')
         self.match('LBRACE')
 
+
         #start recursion and build ASA
         self.decl_comand()
 
+        print('analise sintática realizada com sucesso')
+        print('resultado')
+
+        a = open('../../tp2/output/saidateste.txt','w')
+        for k,v in self.actualTable.symbolTable.items():
+            a.write(v.toString() + '\r\n')
+
+        a.close()
 
     
-
     def decl_comand(self):
-        
-        
-
-        if(self.token == 'INT ' or self.token == 'FLOAT'):
+        print('decl_comand')
+        if(self.token.getCodigoToken() == 'INT' or self.token.getCodigoToken() == 'FLOAT'):
             self.declaration()
             self.decl_comand()
 
-        elif(self.token == 'LBRACE' or self.token == 'ID' or self.token == 'IF' or self.token == 'WHILE' or self.token == 'READ' or self.token == 'PRINT' or self.token == 'FOR'):
+        elif(self.token.getCodigoToken() == 'LBRACE' or self.token.getCodigoToken() == 'ID' or self.token.getCodigoToken() == 'IF' or self.token.getCodigoToken() == 'WHILE' or self.token.getCodigoToken() == 'READ' or self.token.getCodigoToken() == 'PRINT' or self.token.getCodigoToken() == 'FOR'):
             self.comand()
+            self.decl_comand()
+        
 
     
 
 
     def types(self):
         
-        if(self.token == 'INT'):
-            self.match(self.token)
-        
-        elif(self.token == 'FLOAT'):
+        if(self.token.getCodigoToken() == 'INT'):
+            self.match('INT')
+            self.tableEntry.setTipo('int')
+        elif(self.token.getCodigoToken() == 'FLOAT'):
             self.match('FLOAT')
-
+            self.tableEntry.setTipo('float')
+     
 
     def declaration(self):
 
-        if (self.token == 'INT' or self.token == 'FLOAT'):
+        if (self.token.getCodigoToken() == 'INT' or self.token.getCodigoToken() == 'FLOAT'):
             
-            self.type()
+            self.tableEntry = TableEntry(None, None, None, None)
+            self.types()            
+            self.tableEntry.setLexema(self.token.getLexema())
+            self.tableEntry.setNumLinha(self.token.getNumLinha())
+       
+
             self.match('ID')
+            self.declaration2()
             
-            if(self.token == 'COMMA' or self.token == 'PCOMMA' or self.token == 'ATTR'):
-                self.declaration2()
 
     def declaration2(self):
-        if (self.token == 'COMMA'):
-            self.match('COMMA')
-            self.match('ID')
-            if(self.token == 'COMMA' or self.token == 'PCOMMA' or self.token == 'ATTR'):
-                self.declaration2()
         
-        elif(self.token == 'PCOMMA'):
-            self.match('PCOMMA')
+        if (self.token.getCodigoToken() == 'COMMA'):
+            self.match('COMMA')
+            tipo = self.tableEntry.getTipo()
+            self.actualTable.symbolTable[self.tableEntry.getLexema()] = self.tableEntry
+            self.tableEntry = TableEntry(tipo, None, None, None)
+            
+            
+            self.tableEntry.setLexema(self.token.getLexema())
+            self.tableEntry.setNumLinha(self.token.getNumLinha())
 
-        elif(self.token == 'ATTR):
+            self.match('ID')
+            self.declaration2()
+
+        elif(self.token.getCodigoToken() == 'PCOMMA'):
+            self.match('PCOMMA')
+            self.actualTable.symbolTable[self.tableEntry.getLexema()] = self.tableEntry
+            self.tableEntry = TableEntry(None, None, None, None)
+
+        elif(self.token.getCodigoToken() == 'ATTR'):
+            
             self.match('ATTR')
-            if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
-                self.expression()
-            if(self.token == 'COMMA' or self.token == 'PCOMMA' or self.token == 'ATTR'):
-                self.declaration2()    
+            self.expression()
+            self.declaration2()    
 
        
 
     def comand(self):
-    elif(self.token == 'LBRACE' or self.token == 'ID' or self.token == 'IF' or self.token == 'WHILE' or self.token == 'READ' or self.token == 'PRINT' or self.token == 'FOR'):
-
-        if (self.token == 'LBRACE'):
+        if (self.token.getCodigoToken() == 'LBRACE'):
             self.block()
         
-        elif(self.token == 'ID'):
+        elif(self.token.getCodigoToken() == 'ID'):
             self.attr()
         
-        elif(self.token == 'IF'):
+        elif(self.token.getCodigoToken() == 'IF'):
             self.comand_if()
         
-        elif(self.token == 'WHILE'):
+        elif(self.token.getCodigoToken() == 'WHILE'):
             self.comand_while()
         
-        elif(self.token == 'READ')
-            self.self.comand_read()
+        elif(self.token.getCodigoToken() == 'READ'):
+            self.comand_read()
         
-        elif(self.token == 'PRINT'):
-            self.comand_print('PRINT')
+        elif(self.token.getCodigoToken() == 'PRINT'):
+            self.comand_print()
         
-        elif(self.token == 'FOR'):
+        elif(self.token.getCodigoToken() == 'FOR'):
             self.comand_for()
         
 
@@ -167,10 +195,9 @@ class Syntactic():
         self.match('WHILE')
         self.match('LBRACKET')
         self.expression()
-        self.match('LBRACKET')
+        self.match('RBRACKET')
         self.comand()
-        if(self.token == 'ELSE'):
-            self.comand_else()
+
     
     def comand_read(self):
         self.match('READ')
@@ -197,10 +224,10 @@ class Syntactic():
         self.comand()
 
     def expression(self):
-        if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
+        if (self.token.getCodigoToken() == 'ID' or self.token.getCodigoToken() == 'INTEGER_CONST' or self.token.getCodigoToken() == 'FLOAT_CONST' or self.token.getCodigoToken() == 'LBRACKET'):
             self.conjunction()
             
-            if (self.token == 'OR'):
+            if (self.token.getCodigoToken() == 'OR'):
                 self.expressaoOpc()
 
     
@@ -210,10 +237,10 @@ class Syntactic():
         self.expressaoOpc() 
     
     def conjunction(self):
-        if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
+        if (self.token.getCodigoToken() == 'ID' or self.token.getCodigoToken() == 'INTEGER_CONST' or self.token.getCodigoToken() == 'FLOAT_CONST' or self.token.getCodigoToken() == 'LBRACKET'):
             self.equal()
             
-            if(self.token == 'AND'):
+            if(self.token.getCodigoToken() == 'AND'):
                 self.conjuction_opc() 
     
     def conjuction_opc(self):
@@ -224,9 +251,9 @@ class Syntactic():
             self.conjuction_opc
 
     def equal(self):
-        if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
-            self.relacao()
-            if (self.token == 'EQ' or self.token == 'NE'):
+        if (self.token.getCodigoToken() == 'ID' or self.token.getCodigoToken() == 'INTEGER_CONST' or self.token.getCodigoToken() == 'FLOAT_CONST' or self.token.getCodigoToken() == 'LBRACKET'):
+            self.relation()
+            if (self.token.getCodigoToken() == 'EQ' or self.token.getCodigoToken() == 'NE'):
                 self.equal_opc
     
     def equal_opc(self):
@@ -237,8 +264,11 @@ class Syntactic():
             self.equal_opc()
     
     def relation(self):
-        if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
+        if (self.token.getCodigoToken() == 'ID' or self.token.getCodigoToken() == 'INTEGER_CONST' or self.token.getCodigoToken() == 'FLOAT_CONST' or self.token.getCodigoToken() == 'LBRACKET'):
             self.add()
+
+            if(self.token.getCodigoToken() == 'LT' or self.token.getCodigoToken() == 'LE' or self.token.getCodigoToken() == 'GT' or self.token.getCodigoToken() == 'GE'):
+                self.relac_opc()
 
     def op_equal(self):
         self.match('EQ')
@@ -246,48 +276,49 @@ class Syntactic():
 
     def relac_opc(self):
         self.op_rel()
-        self.relation()
+        self.add()
         if(self.token == 'LT' or self.token == 'LE' or self.token == 'GT' or self.token == 'GE'):
             self.relac_opc()
     
     def op_rel(self):
-        if (self.token == 'LT'):
+        
+        if (self.token.getCodigoToken() == 'LT'):
             self.match('LT')
         
-        elif(self.token == 'LE'):
+        elif(self.token.getCodigoToken() == 'LE'):
             self.match('LE')
 
-        elif(self.token == 'GT'):
+        elif(self.token.getCodigoToken() == 'GT'):
             self.match('GT')
 
-        elif (self.token == 'GE'):
+        elif (self.token.getCodigoToken() == 'GE'):
             self.match('GE')
-            )   
+              
     def add(self):
-        if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
+        if (self.token.getCodigoToken() == 'ID' or self.token.getCodigoToken() == 'INTEGER_CONST' or self.token.getCodigoToken() == 'FLOAT_CONST' or self.token.getCodigoToken() == 'LBRACKET'):
             self.term()
-            if (self.token == 'PLUS' or self.token == 'MINUS'):
+            if (self.token.getCodigoToken() == 'PLUS' or self.token.getCodigoToken() == 'MINUS'):
                 self.add_opc()
     
     def add_opc(self):
         self.op_add()
         self.term()
-        if (self.token == 'PLUS' or self.token == 'MINUS'):
+        if (self.token.getCodigoToken() == 'PLUS' or self.token.getCodigoToken() == 'MINUS'):
             self.add_opc()
     
     def op_add(self):
-        if(self.token == 'PLUS'):
+        if(self.token.getCodigoToken() == 'PLUS'):
             self.match('PLUS')
        
         if(self.token == 'MINUS'):
             self.match('MINUS')
 
     def term(self):
-        if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
+        if (self.token.getCodigoToken() == 'ID' or self.token.getCodigoToken() == 'INTEGER_CONST' or self.token.getCodigoToken() == 'FLOAT_CONST' or self.token.getCodigoToken() == 'LBRACKET'):
             self.fact() 
-
-        if(self.token == 'MULT' or self.token == 'DIV'):
-             self.term_opc()
+            
+            if(self.token.getCodigoToken() == 'MULT' or self.token.getCodigoToken() == 'DIV'):
+                self.term_opc()
 
     def term_opc(self):
         self.op_mult()
@@ -297,26 +328,43 @@ class Syntactic():
 
     
     def op_mult(self):
-        if(self.token == 'MULT')
+        if(self.token.getCodigoToken() == 'MULT'):
             self.match('MULT')
-        elif(self.token == 'DIV')
+        elif(self.token.getCodigoToken() == 'DIV'):
             self.match('DIV')
         
     
     def fact(self):
-        if (self.token == 'ID'):
+        if (self.token.getCodigoToken() == 'ID'):
             self.match('ID')
         
-        elif(self.token == 'INTEGER_CONST'):
+        elif(self.token.getCodigoToken() == 'INTEGER_CONST'):
+            '''
+            self.tableEntry.setLexema(self.token.getLexema())
+            self.tableEntry.setNumLinha(self.token.getNumLinha())
+        
+            
+            self.actualTable.symbolTable[self.token.getLexema()] = self.tableEntry
+            self.tableEntry = TableEntry(None, None, None, None)
+            '''
             self.match('INTEGER_CONST')
         
-        elif(self.token == 'FLOAT_CONST'):
+        elif(self.token.getCodigoToken() == 'FLOAT_CONST'):
+            '''
+            self.tableEntry.setLexema(self.token.getLexema())
+            self.tableEntry.setNumLinha(self.token.getNumLinha())
+    
+            
+            print('adicionando o simbolo na tabela de entrada')
+
+            self.actualTable.symbolTable[self.token.getLexema()] = self.tableEntry
+            self.tableEntry = TableEntry(None, None, None, None)
+            '''
             self.match('FLOAT_CONST')
 
-        elif(self.token == 'LBRACKET'):
+        elif(self.token.getCodigoToken() == 'LBRACKET'):
             self.match('LBRACKET')
-            if (self.token == 'ID' or self.token == 'INTEGER_CONST' or self.token == 'FLOAT_CONST' or self.token == 'LBRACKET'):
-                self.expression()
+            self.expression()
             self.match('RBRACKET')
 
     

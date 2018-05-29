@@ -11,12 +11,6 @@ class Token ():
         self.lexema = lexema
         self.num_linha = num_linha
 
-    #Getters and Setters
-    def getNomeToken(self):
-        return self.nomeToken
-
-    def setNomeToken(self, nomeToken):
-         self.nomeToken = nomeToken
 
     def getCodigoToken(self):
         return self.codigoToken
@@ -25,7 +19,7 @@ class Token ():
         self.codigoToken = codigoToken
         
     def getLexema(self):
-        return self.nomeToken
+        return self.lexema
 
     def setLexema(self, lexema):
         self.lexema = lexema
@@ -37,3 +31,5 @@ class Token ():
         self.num_linha = num_linha
 
     
+    def __str__(self):
+        return 'Codigo: ' + self.getCodigoToken() + ' lexema: ' + self.getLexema() + ' num_linha: ' + str(self.getNumLinha())

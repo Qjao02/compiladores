@@ -31,6 +31,11 @@ def main():
     json.dump([ob.__dict__  for ob in vetorToken], output)
     output.close()
 
+    #print do vetor de token
+    arc = open('teste.txt','w')
+    for element in vetorToken:
+        arc.write(element.getCodigoToken() + '\n')
+
     syntactic = Syntactic(vetorToken)
     syntactic.program()
 

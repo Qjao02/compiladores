@@ -1,0 +1,4 @@
+Lexema: a, tipo: float, num_Linha: 2, valor referenciado: None
+Lexema: i, tipo: int, num_Linha: 4, valor referenciado: None
+Lexema: inc, tipo: None, num_Linha: 4, valor referenciado: None
+Lexema: j, tipo: None, num_Linha: 4, valor referenciado: None
