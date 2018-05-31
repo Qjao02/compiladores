@@ -35,8 +35,13 @@ class Assign(AST):
     def __init__(self, left, op, right):
         AST.__init__(self,'Assign');
         print('Criando um nó do tipo Assign.')
-        self.children.append(left)
-        self.children.append(right)
+
+        if(not(left is None)):
+            self.children.append(left)
+
+        if(not(right is None)):    
+            self.children.append(right)
+
         self.left = left
         self.token = self.op = op
         self.right = right
@@ -47,9 +52,15 @@ class If(AST):
     def __init__(self, exp, c_true, c_false):
         AST.__init__(self, 'If')
         print('Criando um nó do tipo If.')
-        self.children.append(exp)
-        self.children.append(c_true)
-        self.children.append(c_false)
+        if(not(exp is None)):
+            self.children.append(exp)
+        
+        if(not(c_true is None)):
+            self.children.append(c_true)
+        
+        if(not(c_false is None)):
+            self.children.append(c_false)
+        
         self.exp = exp;
         self.c_true = c_true;
         self.c_false = c_false;
@@ -60,8 +71,13 @@ class While(AST):
     def __init__(self, exp, commands):
         AST.__init__(self,'While')
         print('Criando um nó do tipo While.')
-        self.children.append(exp)
-        self.children.append(commands)
+        
+        if(not(exp is None)):
+            self.children.append(exp)
+
+        if(not (commands is None)):
+            self.children.append(commands)
+
         self.exp = exp;
         self.commands = commands;
     def __repr__(self):
@@ -71,7 +87,8 @@ class Read(AST):
     def __init__(self, id_):
         AST.__init__(self,'Read')
         print('Criando um nó do tipo Read.')
-        self.children.append(id_)
+        if(not(id_ is None)):
+            self.children.append(id_)
         self.id = id_;
     def __repr__(self):
         return self.nome
@@ -80,7 +97,10 @@ class Print(AST):
     def __init__(self, exp):
         AST.__init__(self,'Print')
         print('Criando um nó do tipo Print.')
-        self.children.append(exp)
+        
+        if(not(exp is None)):
+            self.children.append(exp)
+        
         self.exp = exp;
 
     def __repr__(self):
@@ -89,8 +109,13 @@ class Print(AST):
 class Expr(AST):
     def __init__(self, nome, op, left, right):
         AST.__init__(self,nome)
-        self.children.append(left)
-        self.children.append(right)
+        
+        if(not(left is None)):
+            self.children.append(left)
+        
+        if(not(right is None)):
+            self.children.append(right)
+        
         self.left = left
         self.op = op
         self.right = right
@@ -144,7 +169,7 @@ class Num(AST):
         return self.value
 
 def print_tree(current_node, indent="", last='updown'):
-
+    print('passou aqui')
     nb_children = lambda node: sum(nb_children(child) for child in node.children) + 1
     size_branch = {child: nb_children(child) for child in current_node.children}
 

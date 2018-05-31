@@ -16,7 +16,7 @@ class Syntactic():
     token = ''
     arrayToken = []
     indexToken = ''
-    ASA = ''
+    no = AST('root')
     symbolTableTree = ''
     tableEntry = ''
     actualTable = ''
@@ -27,7 +27,6 @@ class Syntactic():
         self.indexToken = 0
         self.actualTable = SymbolTable()
         self.symbolTableTree = SymbolTableTree(self.actualTable)
-        self.ASA = AST('root')
         
     def match(self,tok):
         if(self.token.getCodigoToken() == tok):
@@ -63,9 +62,9 @@ class Syntactic():
 
         print(self.token.value)
         #start recursion and build ASA
-        no = self.decl_comand()
+        self.decl_comand()
 
-        print_tree(no)
+        print_tree(self.no)
 
         print('analise sintática realizada com sucesso')
         print('resultado')
@@ -76,18 +75,22 @@ class Syntactic():
 
         a.close()
 
-        return no
 
     
     def decl_comand(self):
         print('decl_comand')
         if(self.token.getCodigoToken() == 'INT' or self.token.getCodigoToken() == 'FLOAT'):
-            self.declaration()
+            no2 = self.declaration()
+            if(not(no2 is None)):
+                print('bla')
+                self.no.children.append(no2)
             self.decl_comand()
 
         elif(self.token.getCodigoToken() == 'LBRACE' or self.token.getCodigoToken() == 'ID' or self.token.getCodigoToken() == 'IF' or self.token.getCodigoToken() == 'WHILE' or self.token.getCodigoToken() == 'READ' or self.token.getCodigoToken() == 'PRINT' or self.token.getCodigoToken() == 'FOR'):
-            self.comand()
+            self.no.children.append(self.comand())
             self.decl_comand()
+
+        
         
 
     
@@ -118,10 +121,15 @@ class Syntactic():
             if(self.token.getCodigoToken() == 'ID'):
                 no = Id(self.token)
             self.match('ID')
-            no_attr = self.declaration2(no)
-            no_attr.left = no
+            
+            no_attr = None
+            if(self.token.getCodigoToken() == 'ATTR'):
+                no_attr = Assign(no, '=', None)
 
-            return no
+            
+            self.declaration2(no_attr)
+            
+            return no_attr
 
     def declaration2(self,no):
         
@@ -139,25 +147,22 @@ class Syntactic():
             self.match('ID')
             self.declaration2(no2)
 
-            return no
 
         elif(self.token.getCodigoToken() == 'PCOMMA'):
             self.match('PCOMMA')
             self.actualTable.symbolTable[self.tableEntry.getLexema()] = self.tableEntry
             self.tableEntry = TableEntry(None, None, None, None)
 
-            return no
 
         elif(self.token.getCodigoToken() == 'ATTR'):
             
 
-            no_attr = Assign(no,'=',None,)
             self.match('ATTR')
             no2 = self.expression()
-            no_attr.right = no2
+            no.children.append(no2)
+            no.right = no2
             no = self.declaration2(no)
-
-            return no_attr    
+    
             
 
        
@@ -204,13 +209,17 @@ class Syntactic():
 
     def attr(self):
         no1 = Id(self.token)
+        print(no1.nome)
         no_attr = Assign(no1 , '=', None)
 
         self.match('ID')
         self.match('ATTR')
 
         no2 = self.expression()
+        print(no2.nome)
+        no_attr.children.append(no2)
         no_attr.right = no2
+        print(no_attr.children)
 
         self.match('PCOMMA')
 
@@ -225,6 +234,7 @@ class Syntactic():
 
         no_expr = self.expression()
         no_if.children.append(no_expr)
+        no_if.exp = no_expr
 
         self.match('RBRACKET')
         
@@ -270,9 +280,12 @@ class Syntactic():
         no_id = Id(self.token)
         no_read.children.append(no_id)
         
+        print(no_read.children)
         self.match('ID')
         self.match('PCOMMA')
 
+        print_tree(no_read)
+        print('test')
         return no_read
 
     def comand_print(self):
@@ -308,44 +321,50 @@ class Syntactic():
             
             if (self.token.getCodigoToken() == 'OR'):
                 no_expr_opc = self.expressaoOpc()
-                no_expr_opc.left(no)
-                
+                no_expr_opc.children.append(no)
+                no_expr_opc.left = no
+
                 return no_expr_opc
             
             return no
 
     
     def expressaoOpc(self):
-        no_expr_opc = LogicalOp(None, 'OR', None)
+        no_expr_opc = LogicalOp('OR', None, None)
         self.match('OR')
         self.conjunction()
 
         if(self.token.getCodigoToken() == 'OR'):
             no_expr_opc2 = self.expressaoOpc() 
-            no_expr_opc2.left(no_expr_opc)
+            no_expr_opc2.children.left(no_expr_opc)
+            no_expr_opc2.left = no_expr_opc
+            
             return no_expr_opc2
         
-    
+        return no_expr_opc
+
     def conjunction(self):
         if (self.token.getCodigoToken() == 'ID' or self.token.getCodigoToken() == 'INTEGER_CONST' or self.token.getCodigoToken() == 'FLOAT_CONST' or self.token.getCodigoToken() == 'LBRACKET'):
             no = self.equal()
             
             if(self.token.getCodigoToken() == 'AND'):
                 no_conj = self.conjuction_opc() 
-                no_conj.left(no)
+                no_conj.children.append(no)
+                no_conj.left = no
 
         return no
     
     def conjuction_opc(self):
-        no_conj = LogicalOp(None,'AND', None)
+        no_conj = LogicalOp('AND', None, None)
         self.match('AND')
         no = self.equal()
-        no_conj.right(no)
+        no_conj.children.append(no)
+        no_conj.right = no
         
         if(self.token == 'AND'):
             no_conj2 = self.conjuction_opc()
-            no_conj2.left(no_conj)
-            
+            no_conj2.children.left(no_conj)
+            no_conj2.left = no_conj
             return no_conj2
         
         return no_conj
@@ -356,7 +375,7 @@ class Syntactic():
 
             if (self.token.getCodigoToken() == 'EQ' or self.token.getCodigoToken() == 'NE'):
                 no_equal_opc = self.equal_opc()
-                no_equal_opc.left(no)
+                no_equal_opc.children.append(no)
                 return no_equal_opc
     
             return no
@@ -364,11 +383,12 @@ class Syntactic():
     def equal_opc(self):
         no_op_equal = self.op_equal()
         no = self.relation()
-        no_op_equal.right(no)
+        no_op_equal.children.append(no)
+        no_op_equal.right = no
         
         if (self.token == 'EQ' or self.token == 'NE'):
             no_equal_opc2 = self.equal_opc()
-            no_equal_opc2.left(no)
+            no_equal_opc2.children.append(no)
             return no_equal_opc2
 
 
@@ -389,7 +409,8 @@ class Syntactic():
 
             if(self.token.getCodigoToken() == 'LT' or self.token.getCodigoToken() == 'LE' or self.token.getCodigoToken() == 'GT' or self.token.getCodigoToken() == 'GE'):
                 no_relac_opc = self.relac_opc()
-                no_relac_opc.left(no)
+                no_relac_opc.children.append(no)
+                no_relac_opc.left = no
 
                 return no_relac_opc
 
@@ -400,11 +421,12 @@ class Syntactic():
     def relac_opc(self):
         no_op_rel = self.op_rel()
         no2 = self.add()
-        no.right = no2
+        no_op_rel.children.append(no2)
+        no_op_rel.right = no2
 
         if(self.token == 'LT' or self.token == 'LE' or self.token == 'GT' or self.token == 'GE'):
             no_op_rel2 = self.relac_opc()
-            no_op_rel2.left = no_op_rel
+            no_op_rel2.append(no_op_rel)
 
             return no_op_rel2
 
@@ -434,6 +456,7 @@ class Syntactic():
             
             if (self.token.getCodigoToken() == 'PLUS' or self.token.getCodigoToken() == 'MINUS'):
                 no_plus_minus = self.add_opc()
+                no_plus_minus.children.append(no)
                 no_plus_minus.left = no
                 
                 return no_plus_minus
@@ -443,11 +466,12 @@ class Syntactic():
     def add_opc(self):
         no_plus_minus = self.op_add()
         no2 = self.term()
+        no_plus_minus.children.append(no2)
         no_plus_minus.right = no2
 
         if (self.token.getCodigoToken() == 'PLUS' or self.token.getCodigoToken() == 'MINUS'):
             no_plus_minus2 = self.add_opc()
-            no_plus_minus2.left(no_plus_minus)
+            no_plus_minus2.children.append(no_plus_minus)
             return no_plus_minus2
         
         return no_plus_minus
@@ -471,6 +495,7 @@ class Syntactic():
             
             if(self.token.getCodigoToken() == 'MULT' or self.token.getCodigoToken() == 'DIV'):
                 no_div_mult = self.term_opc()
+                no_div_mult.children.append(no)
                 no_div_mult.left = no
                 return no_div_mult
 
@@ -480,11 +505,12 @@ class Syntactic():
     def term_opc(self):
         no_div_mult = self.op_mult()
         no2 = self.fact()
-        no_div_mult.right  = no2
+        no_div_mult.children.append(no2)
         
         if(self.token == 'MULT' or self.token == 'DIV'):
             no_div_mult2 = self.term_opc()
-            no_div_mult2.left = no_div_mult
+            no_div_mult2.children.append(no_div_mult)
+            no_div_mult.left = no_div_mult
             return no_div_mult2
 
         return no_div_mult
