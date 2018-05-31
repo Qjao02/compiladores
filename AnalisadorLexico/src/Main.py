@@ -37,7 +37,7 @@ def main():
         arc.write(element.getCodigoToken() + '\n')
 
     syntactic = Syntactic(vetorToken)
-    syntactic.program()
+    root = syntactic.program()
 
     
 if __name__ == '__main__':

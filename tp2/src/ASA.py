@@ -1,3 +1,5 @@
+from Token import Token
+
 class AST(object):
     def __init__(self, nome):
          self.nome = nome;
