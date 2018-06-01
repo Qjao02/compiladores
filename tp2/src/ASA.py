@@ -149,7 +149,7 @@ class Id(AST):
         self.value = token.value
 
     def __repr__(self):
-        return repr(self.token)
+        return repr(self.token.getLexema())
 
     def __evaluate__(self):
         return self.value
@@ -163,13 +163,12 @@ class Num(AST):
         self.value = token.value  #em python, não precisamos nos preocupar com o tipo de value
 
     def __repr__(self):
-        return repr(self.token)
+        return repr(self.token.getLexema())
 
     def __evaluate__(self):
         return self.value
 
 def print_tree(current_node, indent="", last='updown'):
-    print('passou aqui')
     nb_children = lambda node: sum(nb_children(child) for child in node.children) + 1
     size_branch = {child: nb_children(child) for child in current_node.children}
 

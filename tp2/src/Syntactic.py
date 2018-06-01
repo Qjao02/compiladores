@@ -16,7 +16,7 @@ class Syntactic():
     token = ''
     arrayToken = []
     indexToken = ''
-    no = AST('root')
+    no = ''
     symbolTableTree = ''
     tableEntry = ''
     actualTable = ''
@@ -27,7 +27,7 @@ class Syntactic():
         self.indexToken = 0
         self.actualTable = SymbolTable()
         self.symbolTableTree = SymbolTableTree(self.actualTable)
-        
+        self.no = AST('root')
     def match(self,tok):
         if(self.token.getCodigoToken() == tok):
             '''for k,v in self.actualTable.symbolTable.items():
@@ -62,13 +62,14 @@ class Syntactic():
 
         print(self.token.value)
         #start recursion and build ASA
-        self.decl_comand()
-
-        print_tree(self.no)
+        print('bla ' + self.no.nome)
+        self.decl_comand(self.no)
 
         print('analise sintática realizada com sucesso')
         print('resultado')
-
+        print(self.no.children)
+        
+        print_tree(self.no)
         a = open('../../tp2/output/saidateste.txt','w')
         for k,v in self.actualTable.symbolTable.items():
             a.write(v.toString() + '\r\n')
@@ -77,18 +78,26 @@ class Syntactic():
 
 
     
-    def decl_comand(self):
-        print('decl_comand')
+    def decl_comand(self,no):
         if(self.token.getCodigoToken() == 'INT' or self.token.getCodigoToken() == 'FLOAT'):
             no2 = self.declaration()
             if(not(no2 is None)):
                 print('bla')
-                self.no.children.append(no2)
-            self.decl_comand()
+                no.children.append(no2)
+            if(self.token.getCodigoToken() == 'INT' or self.token.getCodigoToken() == 'FLOAT' or self.token.getCodigoToken() == 'LBRACE' or self.token.getCodigoToken() == 'ID' or self.token.getCodigoToken() == 'IF' or self.token.getCodigoToken() == 'WHILE' or self.token.getCodigoToken() == 'READ' or self.token.getCodigoToken() == 'PRINT' or self.token.getCodigoToken() == 'FOR'):
+                self.decl_comand(no)
 
         elif(self.token.getCodigoToken() == 'LBRACE' or self.token.getCodigoToken() == 'ID' or self.token.getCodigoToken() == 'IF' or self.token.getCodigoToken() == 'WHILE' or self.token.getCodigoToken() == 'READ' or self.token.getCodigoToken() == 'PRINT' or self.token.getCodigoToken() == 'FOR'):
-            self.no.children.append(self.comand())
-            self.decl_comand()
+            no3 = self.comand()
+
+            if(not(no3 is None)):
+                no.children.append(no3)
+
+            if(self.token.getCodigoToken() == 'INT' or self.token.getCodigoToken() == 'FLOAT' or self.token.getCodigoToken() == 'LBRACE' or self.token.getCodigoToken() == 'ID' or self.token.getCodigoToken() == 'IF' or self.token.getCodigoToken() == 'WHILE' or self.token.getCodigoToken() == 'READ' or self.token.getCodigoToken() == 'PRINT' or self.token.getCodigoToken() == 'FOR'):
+                self.decl_comand(no)
+           # print('O no attr aqui ')
+            print(self.no.children)
+
 
         
         
@@ -170,6 +179,8 @@ class Syntactic():
     def comand(self):
         if (self.token.getCodigoToken() == 'LBRACE'):
             no = self.block()
+            print('FILHOS DO NO BLOCO \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n')
+            print(no.children)
             return no
         
         elif(self.token.getCodigoToken() == 'ID'):
@@ -178,6 +189,7 @@ class Syntactic():
         
         elif(self.token.getCodigoToken() == 'IF'):
             no = self.comand_if()
+            print(no.children)
             return no
         
         elif(self.token.getCodigoToken() == 'WHILE'):
@@ -201,9 +213,11 @@ class Syntactic():
     def block(self):
         self.match('LBRACE')
         no_block = Compound()
-        no_block.children.append(self.decl_comand())
+        self.decl_comand(no_block)
         self.match('RBRACE')
         
+        print('FILHOS DO NO BLOCO ------ \r\n\r\n\r\n\r\n')
+        print(no_block.children)
         return no_block
 
 
@@ -245,6 +259,7 @@ class Syntactic():
             no_else = self.comand_else()
             no_if.children.append(no_else)
 
+        print(no_if.children)
         return no_if
         
     
@@ -284,7 +299,6 @@ class Syntactic():
         self.match('ID')
         self.match('PCOMMA')
 
-        print_tree(no_read)
         print('test')
         return no_read
 
@@ -297,10 +311,15 @@ class Syntactic():
 
         no_expr = self.expression()
         no_print.children.append(no_expr)
+        no_print.exp = no_expr
+
+        print('O NO COMAND PRINT -------\r\n\r\n\r\n\r\n')
+        print(no_print.children)
 
         self.match('RBRACKET')
         self.match('PCOMMA')
 
+        return no_print
 
     #sem for por enquanto =('''
     def comand_for(self):
@@ -404,17 +423,19 @@ class Syntactic():
             return RelOp(None, '!=', None)
 
     def relation(self):
-        if (self.token.getCodigoToken() == 'ID' or self.token.getCodigoToken() == 'INTEGER_CONST' or self.token.getCodigoToken() == 'FLOAT_CONST' or self.token.getCodigoToken() == 'LBRACKET'):
-            no = self.add()
+        no = self.add()
 
-            if(self.token.getCodigoToken() == 'LT' or self.token.getCodigoToken() == 'LE' or self.token.getCodigoToken() == 'GT' or self.token.getCodigoToken() == 'GE'):
-                no_relac_opc = self.relac_opc()
-                no_relac_opc.children.append(no)
-                no_relac_opc.left = no
+        if(self.token.getCodigoToken() == 'LT' or self.token.getCodigoToken() == 'LE' or self.token.getCodigoToken() == 'GT' or self.token.getCodigoToken() == 'GE'):
+            no_relac_opc = self.relac_opc()
+            no_relac_opc.children.append(no)
+            no_relac_opc.left = no
+            print('filhos do no > \r\n\r\n\r\n\r\n\r\n')
+            print(no_relac_opc.children)
 
-                return no_relac_opc
+            return no_relac_opc
 
-            return no 
+       
+        return no 
 
    
 
@@ -427,9 +448,11 @@ class Syntactic():
         if(self.token == 'LT' or self.token == 'LE' or self.token == 'GT' or self.token == 'GE'):
             no_op_rel2 = self.relac_opc()
             no_op_rel2.append(no_op_rel)
+            no_op_rel2.left = no_op_rel
 
             return no_op_rel2
 
+       
         return no_op_rel
     def op_rel(self):
         
