@@ -3,6 +3,7 @@
 import easygui
 import sys
 from PyQt5.QtGui import *
+from random import randint as rd
 
 
 class IO:
@@ -28,7 +29,9 @@ class IO:
 
     def read(self):
         #easygui.msgbox('O arquivo de entrada foi montado a partir de um txt que é a cópia do código presente na especificação do trabalho. Selecione o arquivo entrada.txt e posteriormente o arquivo tabelaToken.txt e por útimo selecione o diretorio destino para que a saída do possa ser armazenada', 'IMPORTANTE')
-        pathToEntrada = '../entrada/entrada.txt'
+        numberTest = rd(1,20)
+        print(numberTest)
+        pathToEntrada = '../entrada/teste' + str(19) + '.c'
         try:
            
             self.arc = open(pathToEntrada, "r")

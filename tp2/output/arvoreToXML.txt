@@ -1,0 +1,33 @@
+<AST>
+	<Assign>
+		<Id lexema='a'/>
+		<ArithOp op='*'>
+			<ArithOp op='+'>
+				<Num value='1'/>
+				<Id lexema='a'/>
+			</ArithOp>
+			<Id lexema='a'/>
+		</ArithOp>
+	</Assign>
+	<For>
+		<Assign>
+			<Id lexema='i'/>
+			<Num value='0'/>
+		</Assign>
+		<RelOp op='<'>
+			<Num value='4'/>
+			<Id lexema='i'/>
+		</RelOp>
+		<Assign>
+			<Id lexema='i'/>
+			<ArithOp op='+'>
+				<Num value='1'/>
+				<Id lexema='i'/>
+			</ArithOp>
+		</Assign>
+		<Assign>
+			<Id lexema='a'/>
+			<Num value='1'/>
+		</Assign>
+	</For>
+</AST>

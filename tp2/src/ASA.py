@@ -83,6 +83,32 @@ class While(AST):
     def __repr__(self):
         return self.nome
 
+class For(AST):
+    def __init__(self, attr, exp, attr2, commands):
+        AST.__init__(self,'For')
+        print('Criando um nó do tipo For.')
+        
+
+        if (not(attr is None)):
+            self.children.append(attr)
+            self.attr = attr
+
+
+        if(not(exp is None)):
+            self.children.append(exp)
+            self.exp = exp;
+
+        if (not(attr is None)):
+            self.children.append(attr2)
+            self.attr2 = attr2
+
+        if(not (commands is None)):
+            self.children.append(commands)
+            self.commands = commands
+
+    def __repr__(self):
+        return self.nome
+
 class Read(AST):
     def __init__(self, id_):
         AST.__init__(self,'Read')
@@ -109,7 +135,6 @@ class Print(AST):
 class Expr(AST):
     def __init__(self, nome, op, left, right):
         AST.__init__(self,nome)
-        
         if(not(left is None)):
             self.children.append(left)
         
@@ -201,3 +226,87 @@ def print_tree(current_node, indent="", last='updown'):
         next_last = 'down' if down.index(child) is len(down) - 1 else ''
         next_indent = '{0}{1}{2}'.format(indent, ' ' if 'down' in last else '│', " " * len(current_node.__repr__()))
         print_tree(child, indent=next_indent, last=next_last)
+
+
+
+class ToXML:
+    
+    @staticmethod
+    def toXML(no):
+        count = 1
+        
+        arvoreToXML = open('../../tp2/output/arvoreToXML.txt','w')
+        arvoreToXML.close()
+        arvoreToXML = open('../../tp2/output/arvoreToXML.txt','w')
+
+        
+        arvoreToXML.write('<' + no.nome + '>\r\n')
+            
+        for child in no.children:
+            i = 0
+            for i in range(0,count):
+                arvoreToXML.write('\t')
+            
+            if(child.nome == 'Id' or child.nome == 'Num'):
+
+                arvoreToXML.write('<' + child.nome + ToXML.classifierPrint(child) + '/\r\n')
+            
+            else:
+                arvoreToXML.write('<' + child.nome + ToXML.classifierPrint(child) + '>\r\n')
+
+                ToXML.deepSearch(child, count, arvoreToXML)
+                
+                for i in range(0,count):
+                    arvoreToXML.write('\t')
+            
+                arvoreToXML.write('</' + child.nome + '>\r\n')
+        
+               
+        arvoreToXML.write('</' + no.nome + '>\r\n')
+
+
+    @staticmethod
+    def deepSearch( no, count,arvoreToXML):
+    
+        count = count + 1
+
+        for child in no.children:
+            i = 0
+            for i in range(0,count):
+                arvoreToXML.write('\t')
+            
+            if(child.nome == 'Id' or child.nome == 'Num'):
+
+                arvoreToXML.write('<' + child.nome + ToXML.classifierPrint(child) + '/>\r\n')
+            
+            else:
+                arvoreToXML.write('<' + child.nome + ToXML.classifierPrint(child) + '>\r\n')
+
+                ToXML.deepSearch(child, count, arvoreToXML)
+
+
+                for i in range(0,count):
+                    arvoreToXML.write('\t')
+
+
+                arvoreToXML.write('</' + child.nome + '>\r\n')
+        
+        
+         
+    @staticmethod
+    def classifierPrint(no):
+        
+        if(no.nome == 'Id'):
+            return ' lexema=\'' + no.token.getLexema() + '\''
+
+        elif(no.nome == 'Num'):
+            return ' value=\'' + no.token.getLexema() + '\''
+        
+        elif(no.nome == 'ArithOp' or no.nome == 'RelOp' or no.nome == 'LogicalOp'):
+            return ' op=\'' + no.op + '\''
+
+        else:
+            return ''
+
+
+            
