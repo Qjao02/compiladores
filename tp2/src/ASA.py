@@ -300,7 +300,7 @@ class ToXML:
             return ' lexema=\'' + no.token.getLexema() + '\''
 
         elif(no.nome == 'Num'):
-            return ' value=\'' + no.token.getLexema() + '\''
+            return ' value=\'' + no.token.getLexema() + ' type:\'' + no.value +  '\''
         
         elif(no.nome == 'ArithOp' or no.nome == 'RelOp' or no.nome == 'LogicalOp'):
             return ' op=\'' + no.op + '\''

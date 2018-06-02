@@ -1,33 +1,62 @@
 <AST>
 	<Assign>
-		<Id lexema='a'/>
-		<ArithOp op='*'>
-			<ArithOp op='+'>
-				<Num value='1'/>
-				<Id lexema='a'/>
-			</ArithOp>
-			<Id lexema='a'/>
-		</ArithOp>
+		<Id lexema='x'/>
+		<Num value='1 type:'int'/>
 	</Assign>
-	<For>
-		<Assign>
-			<Id lexema='i'/>
-			<Num value='0'/>
-		</Assign>
-		<RelOp op='<'>
-			<Num value='4'/>
-			<Id lexema='i'/>
+	<Assign>
+		<Id lexema='y'/>
+		<Num value='10 type:'int'/>
+	</Assign>
+	<Assign>
+		<Id lexema='a'/>
+		<Num value='2 type:'int'/>
+	</Assign>
+	<Assign>
+		<Id lexema='z'/>
+		<Num value='1000 type:'int'/>
+	</Assign>
+	<While>
+		<RelOp op='>'>
+			<Id lexema='x'/>
+			<Id lexema='y'/>
 		</RelOp>
-		<Assign>
-			<Id lexema='i'/>
-			<ArithOp op='+'>
-				<Num value='1'/>
-				<Id lexema='i'/>
+		<Block>
+			<Assign>
+				<Id lexema='y'/>
+				<ArithOp op='-'>
+					<Num value='1 type:'int'/>
+					<Id lexema='y'/>
+				</ArithOp>
+			</Assign>
+			<Assign>
+				<Id lexema='x'/>
+				<ArithOp op='*'>
+					<Num value='2 type:'int'/>
+					<Id lexema='x'/>
+				</ArithOp>
+			</Assign>
+			<Assign>
+				<Id lexema='z'/>
+				<ArithOp op='/'>
+					<Id lexema='x'/>
+					<Id lexema='z'/>
+				</ArithOp>
+			</Assign>
+		</Block>
+	</While>
+	<Print>
+		<Id lexema='x'/>
+	</Print>
+	<Print>
+		<Id lexema='z'/>
+	</Print>
+	<Print>
+		<ArithOp op='/'>
+			<ArithOp op='-'>
+				<Id lexema='y'/>
+				<Id lexema='z'/>
 			</ArithOp>
-		</Assign>
-		<Assign>
-			<Id lexema='a'/>
-			<Num value='1'/>
-		</Assign>
-	</For>
+			<Id lexema='x'/>
+		</ArithOp>
+	</Print>
 </AST>

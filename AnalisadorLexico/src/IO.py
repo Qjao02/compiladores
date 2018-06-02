@@ -31,7 +31,7 @@ class IO:
         #easygui.msgbox('O arquivo de entrada foi montado a partir de um txt que é a cópia do código presente na especificação do trabalho. Selecione o arquivo entrada.txt e posteriormente o arquivo tabelaToken.txt e por útimo selecione o diretorio destino para que a saída do possa ser armazenada', 'IMPORTANTE')
         numberTest = rd(1,20)
         print(numberTest)
-        pathToEntrada = '../entrada/teste' + str(19) + '.c'
+        pathToEntrada = '../entrada/teste' + str(numberTest) + '.c'
         try:
            
             self.arc = open(pathToEntrada, "r")

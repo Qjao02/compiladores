@@ -1,3 +1,4 @@
-Lexema: a, tipo: int, num_Linha: 2, valor referenciado: None
-Lexema: b, tipo: int, num_Linha: 2, valor referenciado: None
-Lexema: i, tipo: int, num_Linha: 2, valor referenciado: None
+Lexema: x, tipo: int, num_Linha: 3, valor referenciado: None
+Lexema: y, tipo: int, num_Linha: 3, valor referenciado: None
+Lexema: a, tipo: float, num_Linha: 4, valor referenciado: None
+Lexema: z, tipo: float, num_Linha: 4, valor referenciado: None

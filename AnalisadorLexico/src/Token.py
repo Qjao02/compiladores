@@ -11,8 +11,15 @@ class Token ():
         self.codigoToken = codigoToken
         self.lexema = lexema
         self.num_linha = num_linha
-        self.value = None
-
+        
+        if(codigoToken == 'INTEGER_CONST'):
+            self.value = 'int'
+        
+        elif(codigoToken == 'FLOAT_CONST'):
+            self.value = 'float'
+        
+        else:
+            self.value = None
 
     def getCodigoToken(self):
         return self.codigoToken

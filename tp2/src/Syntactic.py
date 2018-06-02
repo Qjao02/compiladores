@@ -137,9 +137,7 @@ class Syntactic():
                 
             self.declaration2(self.no, no_attr)
             
-            if(not(no_attr is None)):
-                print('FILHOS DO NO ATTR DE DECLARACAO \r\n\r\n\r\n')
-                print(no_attr.children)
+           
             
 
     def declaration2(self, no_pai, no):
@@ -180,8 +178,7 @@ class Syntactic():
             no.right = no2
             no_pai.children.append(no)
             
-            print('Atribuiu o no: ' + no.op + ' que tem os filhos :')
-            print(no.children)
+
             
             self.declaration2(no_pai, no)
     
@@ -192,8 +189,7 @@ class Syntactic():
     def comand(self):
         if (self.token.getCodigoToken() == 'LBRACE'):
             no = self.block()
-            print('FILHOS DO NO BLOCO \r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n')
-            print(no.children)
+    
             return no
         
         elif(self.token.getCodigoToken() == 'ID'):
@@ -202,7 +198,6 @@ class Syntactic():
         
         elif(self.token.getCodigoToken() == 'IF'):
             no = self.comand_if()
-            print(no.children)
             return no
         
         elif(self.token.getCodigoToken() == 'WHILE'):
@@ -228,27 +223,20 @@ class Syntactic():
         no_block = Compound()
         self.decl_comand(no_block)
         self.match('RBRACE')
-        
-        print('FILHOS DO NO BLOCO ------ \r\n\r\n\r\n\r\n')
-        print(no_block.children)
+    
         return no_block
 
 
     def attr(self):
         no1 = Id(self.token)
-        print(no1.nome)
         no_attr = Assign(no1 , '=', None)
 
         self.match('ID')
         self.match('ATTR')
 
         no2 = self.expression()
-        print(no2.nome)
         no_attr.children.append(no2)
         no_attr.right = no2
-
-        print('FILHOS DO NO ATTR \r\n\r\n\r\n\r\n\r\n')
-        print(no_attr.children)
 
         self.match('PCOMMA')
 
@@ -274,7 +262,6 @@ class Syntactic():
             no_else = self.comand_else()
             no_if.children.append(no_else)
 
-        print(no_if.children)
         return no_if
         
     
@@ -312,11 +299,9 @@ class Syntactic():
         no_id = Id(self.token)
         no_read.children.append(no_id)
         
-        print(no_read.children)
         self.match('ID')
         self.match('PCOMMA')
 
-        print('test')
         return no_read
 
     def comand_print(self):
@@ -329,9 +314,6 @@ class Syntactic():
         no_expr = self.expression()
         no_print.children.append(no_expr)
         no_print.exp = no_expr
-
-        print('O NO COMAND PRINT -------\r\n\r\n\r\n\r\n')
-        print(no_print.children)
 
         self.match('RBRACKET')
         self.match('PCOMMA')
@@ -349,8 +331,6 @@ class Syntactic():
         no_for.children.append(no_attr)
         no_for.attr = no_attr
         
-        print('FILHOS DO NO ATTR DO FOR: --------------------- \r\n\r\n\r\n')
-        print(no_attr.children)
         self.match('PCOMMA')
         
         no_expr = self.expression()
@@ -370,8 +350,6 @@ class Syntactic():
             no_for.children.append(no_comand)
             no_for.commands = no_comand
         
-        print('Filhos do FOR ----------------')
-        print(no_for.children)
         return no_for
 
     def att_for(self):
@@ -487,9 +465,7 @@ class Syntactic():
             no_relac_opc = self.relac_opc()
             no_relac_opc.children.append(no)
             no_relac_opc.left = no
-            print('filhos do no > \r\n\r\n\r\n\r\n\r\n')
-            print(no_relac_opc.children)
-
+            
             return no_relac_opc
 
        
@@ -539,9 +515,6 @@ class Syntactic():
             no_plus_minus.children.append(no)
             no_plus_minus.left = no
             
-            print('FILHOS DO NO MINUS --------')
-            print(no_plus_minus.children)
-
             return no_plus_minus
 
         return no
@@ -585,9 +558,6 @@ class Syntactic():
             no_div_mult.children.append(no)
             no_div_mult.left = no
             
-            print('Criado um no div Mult que tem os filhos : =---------------------')
-            print(no_div_mult.children)
-
             return no_div_mult
 
 
@@ -628,35 +598,15 @@ class Syntactic():
             return no 
         
         elif(self.token.getCodigoToken() == 'INTEGER_CONST'):
-            '''
-            self.tableEntry.setLexema(self.token.getLexema())
-            self.tableEntry.setNumLinha(self.token.getNumLinha())
-        
             
-            self.actualTable.symbolTable[self.token.getLexema()] = self.tableEntry
-            self.tableEntry = TableEntry(None, None, None, None)
-            '''
-
             no = Num(self.token)
-            print('valor do token criado')
-            print(no.token.getLexema())
 
             self.match('INTEGER_CONST')
             return no
 
         elif(self.token.getCodigoToken() == 'FLOAT_CONST'):
-            '''
-            self.tableEntry.setLexema(self.token.getLexema())
-            self.tableEntry.setNumLinha(self.token.getNumLinha())
-    
             
-            print('adicionando o simbolo na tabela de entrada')
-
-            self.actualTable.symbolTable[self.token.getLexema()] = self.tableEntry
-            self.tableEntry = TableEntry(None, None, None, None)
-            '''
             no = Num(self.token)
-            print(no.value)
             self.match('FLOAT_CONST')
             return no 
 
